@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% from 'components/pagination.html' import render_pagination %}
+{% from 'components/product_card.html' import product_card %}
+{% from 'components/shop_card.html' import shop_card %}
+
+{% block title %}Search Results for "{{ query }}" - Your Marketplace{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">Search Results for "<span class="text-indigo-600">{{ query }}</span>"</h1>
+
+    <!-- Products Section -->
+    <section class="mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-3">Products</h2>
+        {% if products %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {% for product in products %}
+                    {% include 'components/product_card.html' %}
+                {% endfor %}
+            </div>
+            {# If you implement pagination for products, uncomment and adjust this #}
+            {# {{ render_pagination(products_pagination, 'customer.search', {'q': query}) }} #}
+        {% else %}
+            <div class="bg-white p-6 rounded-lg shadow-md text-center text-gray-600">
+                <p class="text-lg">No products found matching your search.</p>
+            </div>
+        {% endif %}
+    </section>
+
+    <!-- Shops Section -->
+    <section>
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-3">Shops</h2>
+        {% if shops %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {% for shop in shops %}
+                    {% include 'components/shop_card.html' %}
+                {% endfor %}
+            </div>
+            {# If you implement pagination for shops, uncomment and adjust this #}
+            {# {{ render_pagination(shops_pagination, 'customer.search', {'q': query}) }} #}
+        {% else %}
+            <div class="bg-white p-6 rounded-lg shadow-md text-center text-gray-600">
+                <p class="text-lg">No shops found matching your search.</p>
+            </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/customer.js') }}"></script>
+{% endblock %}

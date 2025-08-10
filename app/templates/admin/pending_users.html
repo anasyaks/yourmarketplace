@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Pending Marketers - Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">Pending Marketer Accounts</h1>
+
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Accounts Awaiting Approval</h2>
+        {% if users %}
+            <form action="{{ url_for('admin.pending_users') }}" method="POST">
+                {{ form.hidden_tag() }}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <input type="checkbox" id="select-all-users" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registered On</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for user in users %}
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <input type="checkbox" name="user_ids" value="{{ user.id }}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ user.username }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.email }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <a href="{{ url_for('admin.approve_user', user_id=user.id) }}" class="text-green-600 hover:text-green-900 mr-4">Approve</a>
+                                    <a href="{{ url_for('admin.reject_user', user_id=user.id) }}" class="text-red-600 hover:text-red-900">Reject & Delete</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-6 flex items-center space-x-4">
+                    <label for="action" class="text-sm font-medium text-gray-700">Bulk Action:</label>
+                    {{ form.action(class="mt-1 block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md") }}
+                    {{ form.submit(class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500") }}
+                </div>
+            </form>
+        {% else %}
+            <div class="text-center text-gray-600">
+                <p class="text-lg">No pending marketer accounts.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

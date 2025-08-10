@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}{{ shop.name }}{% endblock %}
+
+{% block content %}
+  <!-- Shop Header -->
+  <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
+    <div class="h-64 bg-gray-100 flex items-center justify-center">
+      {% if shop.logo %}
+        <img src="{{ url_for('static', filename='uploads/' + shop.logo) }}" alt="{{ shop.name }}" class="h-full object-cover">
+      {% else %}
+        <i class="fas fa-store text-6xl text-gray-400"></i>
+      {% endif %}
+    </div>
+    <div class="p-6">
+      <div class="flex justify-between items-start">
+        <div>
+          <h1 class="text-2xl font-bold">{{ shop.name }}</h1>
+          <p class="text-gray-600 mt-1">
+            <i class="fas fa-map-marker-alt mr-1"></i> {{ shop.location }}
+          </p>
+        </div>
+        <div class="flex items-center">
+          <div class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">
+            <i class="fas fa-star mr-1"></i> {{ avg_rating|round(1) }} ({{ rating_count }})
+          </div>
+        </div>
+      </div>
+      <p class="mt-4 text-gray-700">{{ shop.description }}</p>
+      <a href="https://wa.me/234{{ shop.formatted_whatsapp() }}" 
+         class="mt-4 inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+        <i class="fab fa-whatsapp mr-2"></i> Contact via WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <!-- Products by Category -->
+  {% for category_name, products in products_by_category.items() %}
+    <div class="mb-8">
+      <h2 class="text-xl font-semibold mb-4">{{ category_name }}</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for product in products %}
+          <a href="{{ url_for('customer.product_detail', product_id=product.id) }}" class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+            <div class="h-48 bg-gray-100 flex items-center justify-center">
+              {% if product.image %}
+                <img src="{{ url_for('static', filename='uploads/' + product.image) }}" class="h-full object-cover">
+              {% else %}
+                <i class="fas fa-box text-4xl text-gray-400"></i>
+              {% endif %}
+            </div>
+            <div class="p-4">
+              <h3 class="font-semibold">{{ product.name }}</h3>
+              <p class="text-indigo-600 font-medium mt-2">{{ product.formatted_price() }}</p>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}

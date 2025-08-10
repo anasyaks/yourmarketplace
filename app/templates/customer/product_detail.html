@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - Your Marketplace{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-8 flex flex-col md:flex-row gap-8">
+        <!-- Product Image Section -->
+        <div class="md:w-1/2 flex justify-center items-center">
+            <img src="{{ url_for('static', filename='uploads/' + product.image) if product.image else url_for('static', filename='img/default_product.png') }}"
+                 alt="{{ product.name }}"
+                 class="w-full max-w-md h-auto object-cover rounded-lg shadow-md">
+        </div>
+
+        <!-- Product Details Section -->
+        <div class="md:w-1/2 text-center md:text-left">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-2">{{ product.name }}</h1>
+            <a href="{{ url_for('customer.shop_detail', shop_id=product.shop.id) }}" class="text-indigo-600 hover:underline text-lg font-medium mb-2 inline-block">
+                From {{ product.shop.name }}
+            </a>
+            {% if product.category %}
+                <p class="text-gray-600 text-sm mb-4">Category: <span class="font-medium">{{ product.category.name }}</span></p>
+            {% endif %}
+
+            <p class="text-indigo-600 font-bold text-5xl mb-4">{{ product.formatted_price() }}</p>
+
+            <div class="flex items-center justify-center md:justify-start text-lg text-gray-700 mb-6">
+                {% if avg_rating > 0 %}
+                    <span class="text-yellow-500 mr-1 text-2xl">★</span>
+                    <span class="font-semibold">{{ avg_rating }}</span> ({{ rating_count }} ratings)
+                {% else %}
+                    No ratings yet
+                {% endif %}
+            </div>
+
+            <h2 class="text-2xl font-semibold text-gray-800 mb-2">Description</h2>
+            <p class="text-gray-700 leading-relaxed mb-6">{{ product.description }}</p>
+
+            {% if product.shop.whatsapp_number %}
+                <a href="https://wa.me/{{ product.shop.formatted_whatsapp() }}?text=I'm interested in your product: {{ product.name }} ({{ url_for('customer.product_detail', product_id=product.id, _external=true) }})"
+                   target="_blank"
+                   class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4 mr-2">
+                        <path d="m4.922 6.752-1.067.534a7.52 7.52 0 0 0 4.859 4.86l.534-1.068a1 1 0 0 1 1.046-.542l2.858.44a1 1 0 0 1 .848.988V13a1 1 0 0 1-1 1h-2c-.709 0-1.4-.082-2.062-.238a9.012 9.012 0 0 1-6.7-6.7A9.024 9.024 0 0 1 2 5V3a1 1 0 0 1 1-1h1.036a1 1 0 0 1 .988.848l.44 2.858a1 1 0 0 1-.542 1.046Z" />
+                        <path d="M9.22 5.72a.75.75 0 0 0 1.06 1.06l2.22-2.22v1.69a.75.75 0 0 0 1.5 0v-3.5a.75.75 0 0 0-.75-.75h-3.5a.75.75 0 0 0 0 1.5h1.69L9.22 5.72Z" />
+                    </svg>
+                    Contact via WhatsApp
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Rating Section (Example - you'd likely have a form here for submitting ratings) -->
+    <section class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Customer Reviews</h2>
+        {% if current_user.is_authenticated %}
+            <div class="mb-6">
+                <h3 class="text-xl font-medium text-gray-700 mb-3">Submit Your Review</h3>
+                <form action="{{ url_for('customer.rate_product', product_id=product.id) }}" method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-4">
+                        <label for="rating" class="block text-sm font-medium text-gray-700">Your Rating (1-5 Stars)</label>
+                        <select id="rating" name="rating" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option value="">Select rating</option>
+                            <option value="5">5 Stars - Excellent</option>
+                            <option value="4">4 Stars - Very Good</option>
+                            <option value="3">3 Stars - Good</option>
+                            <option value="2">2 Stars - Fair</option>
+                            <option value="1">1 Star - Poor</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="comment" class="block text-sm font-medium text-gray-700">Comment (Optional)</label>
+                        <textarea id="comment" name="comment" rows="3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                    </div>
+                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Submit Review
+                    </button>
+                </form>
+            </div>
+        {% else %}
+            <p class="text-gray-600 mb-6">
+                <a href="{{ url_for('auth.login') }}" class="text-indigo-600 hover:underline">Log in</a> to submit a review for this product.
+            </p>
+        {% endif %}
+
+        <h3 class="text-xl font-medium text-gray-700 mb-3">All Reviews</h3>
+        {% if product.ratings.all() %}
+            <div class="space-y-4">
+                {# Corrected line: Order by the attribute of the Rating model directly #}
+                {% for rating in product.ratings.order_by(RatingModel.created_at.desc()).all() %}
+                    <div class="border border-gray-200 p-4 rounded-md shadow-sm">
+                        <div class="flex items-center mb-2">
+                            <p class="font-semibold text-gray-900 mr-2">{{ rating.user.username }}</p>
+                            <span class="text-yellow-500">
+                                {% for _ in range(rating.value) %}★{% endfor %}{% for _ in range(5 - rating.value) %}☆{% endfor %}
+                            </span>
+                            <span class="text-sm text-gray-500 ml-auto">{{ moment(rating.created_at).fromNow() }}</span>
+                        </div>
+                        {% if rating.comment %}
+                            <p class="text-gray-700 text-sm">{{ rating.comment }}</p>
+                        {% else %}
+                            <p class="text-gray-500 text-sm italic">No comment provided.</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-600">No reviews yet. Be the first to review this product!</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/customer.js') }}"></script>
+{% endblock %}

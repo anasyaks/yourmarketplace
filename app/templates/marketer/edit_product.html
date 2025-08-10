@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% from 'components/form_macros.html' import render_field, render_file_field %}
+
+{% block title %}Edit Product - {{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-[calc(100vh-16rem)] py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-xl w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
+        <div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Edit Product: {{ product.name }}
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Update your product's information below.
+            </p>
+        </div>
+        <form class="mt-8 space-y-6" action="" method="POST" enctype="multipart/form-data" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="rounded-md shadow-sm space-y-4">
+                {{ render_field(form.shop_id, label_class="block text-sm font-medium text-gray-700") }}
+                {{ render_field(form.category_id, label_class="block text-sm font-medium text-gray-700") }}
+
+                <div class="text-sm text-gray-600">
+                    Need a new category? <a href="{{ url_for('marketer.create_category') }}" class="font-medium text-indigo-600 hover:text-indigo-500">Create one here</a>.
+                </div>
+
+                <div class="border-t border-gray-200 pt-4 mt-4">
+                    {{ render_field(form.name, label_class="block text-sm font-medium text-gray-700") }}
+                </div>
+                <div>
+                    {{ render_field(form.description, label_class="block text-sm font-medium text-gray-700", rows="4") }}
+                </div>
+                <div>
+                    {{ render_field(form.price, label_class="block text-sm font-medium text-gray-700") }}
+                </div>
+                <div>
+                    <label for="image" class="block text-sm font-medium text-gray-700">Product Image</label>
+                    {% if product.image %}
+                        <div class="mt-2 mb-4">
+                            <p class="text-sm text-gray-500 mb-1">Current Image:</p>
+                            <img src="{{ url_for('static', filename='uploads/' + product.image) }}" alt="Current Product Image" class="w-24 h-24 object-cover rounded-md border border-gray-200 p-1">
+                        </div>
+                    {% endif %}
+                    {{ render_file_field(form.image, label_class="block text-sm font-medium text-gray-700") }}
+                </div>
+            </div>
+
+            <div>
+                {{ form.submit(class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/marketer.js') }}"></script>
+{% endblock %}

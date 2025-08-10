@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: market-place
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app
+    repo: https://github.com/Hasyakb/malhasmarketplace1.git
+    branch: main

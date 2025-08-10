@@ -1,0 +1,21 @@
+/* app/static/css/style.css
+   This file is intentionally minimal as most styling is handled by Tailwind CSS.
+   Use this file only for custom CSS that cannot be achieved with Tailwind utility classes,
+   or for specific global overrides.
+*/
+
+/* Example: If you needed a very specific custom font size not in Tailwind's config: */
+/* .custom-text-size {
+    font-size: 1.125rem;
+} */
+
+/* Example: If you need to override a default Tailwind style for a specific component: */
+/* .my-custom-button {
+    @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.my-custom-button:hover {
+    background-color: #2563eb; // a slightly darker blue
+} */
+

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Create New Shop - Your Marketplace{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-[calc(100vh-16rem)] py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-xl w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
+        <div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Create Your New Shop
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Fill in the details below to set up your presence on the marketplace.
+            </p>
+        </div>
+        <form class="mt-8 space-y-6" action="" method="POST" enctype="multipart/form-data" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="rounded-md shadow-sm space-y-4">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Shop Name</label>
+                    {{ form.name(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm", placeholder="e.g., John's Electronics") }}
+                    {% for error in form.name.errors %}
+                        <span class="text-red-500 text-xs mt-1 block">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                    {{ form.description(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm", rows="4", placeholder="Tell us about your shop...") }}
+                    {% for error in form.description.errors %}
+                        <span class="text-red-500 text-xs mt-1 block">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div>
+                    <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
+                    {{ form.location(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm", placeholder="e.g., Lagos, Nigeria") }}
+                    {% for error in form.location.errors %}
+                        <span class="text-red-500 text-xs mt-1 block">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div>
+                    <label for="whatsapp_number" class="block text-sm font-medium text-gray-700">WhatsApp Number</label>
+                    {{ form.whatsapp_number(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm", placeholder="e.g., 08012345678") }}
+                    {% for error in form.whatsapp_number.errors %}
+                        <span class="text-red-500 text-xs mt-1 block">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div>
+                    <label for="logo" class="block text-sm font-medium text-gray-700">Shop Logo</label>
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                        <div class="space-y-1 text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="flex text-sm text-gray-600">
+                                <label for="logo" class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                                    <span>Upload a file</span>
+                                    {{ form.logo(class="sr-only") }}
+                                </label>
+                                <p class="pl-1">or drag and drop</p>
+                            </div>
+                            <p class="text-xs text-gray-500">
+                                PNG, JPG, JPEG up to 2MB
+                            </p>
+                        </div>
+                    </div>
+                    {% for error in form.logo.errors %}
+                        <span class="text-red-500 text-xs mt-1 block">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div>
+                {{ form.submit(class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
