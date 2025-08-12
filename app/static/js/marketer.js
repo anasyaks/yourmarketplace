@@ -16,21 +16,22 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Use the new dedicated endpoint for fetching categories
         fetch(`/marketer/categories_by_shop/${shopId}`, {
-            method: 'GET', // Use GET for fetching data
+            method: 'GET',
             headers: {
-                'X-Requested-With': 'XMLHttpRequest', // Identify as AJAX request
+                'X-Requested-With': 'XMLHttpRequest',
             }
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Network response was not ok ' + response.statusText);
+                throw new Error('Network response was not ok: ' + response.statusText);
             }
             return response.json();
         })
         .then(data => {
-            targetCategorySelect.innerHTML = ''; // Clear existing options
+            console.log('Received category data:', data);
+
+            targetCategorySelect.innerHTML = '';
             const defaultOption = document.createElement('option');
             defaultOption.value = '';
             defaultOption.textContent = 'Select a category';
@@ -50,11 +51,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 targetCategorySelect.appendChild(noCategoriesOption);
             }
 
-            // Attempt to set initial selected value if provided
             if (initialSelectedValue) {
                 targetCategorySelect.value = initialSelectedValue;
             } else if (targetCategorySelect.options.length > 1) {
-                // If no initial value, select the first actual category (not the "Select a category" placeholder)
                 targetCategorySelect.value = targetCategorySelect.options[1].value;
             }
         })
@@ -64,27 +63,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- Initial population and change listener for ProductForm's shop select (create_product.html & edit_product.html) ---
     if (shopSelect && categorySelectProductForm) {
-        // Store the initial category value if it exists (for edit product case)
         const initialCategoryValue = categorySelectProductForm.value;
 
         shopSelect.addEventListener('change', function() {
-            // When shop changes, clear category selection and fetch new categories
             categorySelectProductForm.value = '';
             fetchAndPopulateCategoryChoices(this.value, categorySelectProductForm);
         });
 
-        // Trigger initial population on page load
         if (shopSelect.value) {
             fetchAndPopulateCategoryChoices(shopSelect.value, categorySelectProductForm, initialCategoryValue);
         }
     }
 
-    // --- Initial population for shop_products.html (shop_id is fixed) ---
     if (categorySelectShopProducts) {
         const currentShopId = document.querySelector('input[name="shop_id"][type="hidden"]').value;
-        const initialCategoryValue = categorySelectShopProducts.value; // Get current value for edit case
+        const initialCategoryValue = categorySelectShopProducts.value;
         if (currentShopId) {
             fetchAndPopulateCategoryChoices(currentShopId, categorySelectShopProducts, initialCategoryValue);
         }

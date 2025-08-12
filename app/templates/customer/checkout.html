@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - Your Marketplace{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">Checkout</h1>
+
+    {% if cart_items %}
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Order Summary</h2>
+            <div class="divide-y divide-gray-200">
+                {% for item in cart_items %}
+                    <div class="flex items-center py-3">
+                        <div class="flex-shrink-0 w-16 h-16">
+                            <img src="{{ url_for('static', filename='uploads/' + item.image) if item.image else url_for('static', filename='img/default_product.png') }}"
+                                 alt="{{ item.name }}"
+                                 class="w-full h-full object-cover rounded-md">
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <p class="text-lg font-semibold text-gray-900">{{ item.name }}</p>
+                            <p class="text-gray-600 text-sm">{{ item.quantity }} x ₦{{ "%.2f" | format(item.price) }}</p>
+                        </div>
+                        <p class="text-lg font-semibold text-gray-900">₦{{ "%.2f" | format(item.subtotal) }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-gray-200 flex justify-between items-center">
+                <p class="text-xl font-bold text-gray-900">Order Total:</p>
+                <p class="text-2xl font-bold text-indigo-600">₦{{ "%.2f" | format(total_price) }}</p>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Shipping Information</h2>
+            <p class="text-gray-700">Name: {{ current_user.username }}</p>
+            <p class="text-gray-700">Email: {{ current_user.email }}</p>
+            <p class="text-gray-500 text-sm mt-2">
+                (For a real application, you'd collect shipping address, phone number, etc. here)
+            </p>
+        </div>
+
+        <div class="flex justify-end">
+            <form action="{{ url_for('customer.confirm_order') }}" method="POST">
+                <button type="submit" class="px-8 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
+                    Confirm Order
+                </button>
+            </form>
+        </div>
+    {% else %}
+        <div class="bg-white p-6 rounded-lg shadow-md text-center text-gray-600">
+            <p class="text-lg">Your cart is empty. Nothing to checkout.</p>
+            <a href="{{ url_for('customer.index') }}"
+               class="mt-4 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
+                Start Shopping
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

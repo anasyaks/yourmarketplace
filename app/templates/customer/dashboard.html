@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Dashboard - Your Marketplace{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">Welcome, {{ current_user.username }}!</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {# Total Orders Card #}
+        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500">Total Orders</p>
+                <p class="text-3xl font-bold text-gray-900">{{ current_user.orders.count() }}</p>
+            </div>
+            <a href="{{ url_for('customer.my_orders') }}" class="text-indigo-400 hover:text-indigo-600">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-10 w-10">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.06 0L22.5 7.5a.75.75 0 010 1.06L17.72 13.5m-3.988-2.12a.75.75 0 01-.02-.975l.432-.432a.75.75 0 01.975-.02l2.121 2.121a.75.75 0 01.02.975l-.432.432a.75.75 0 01-.975.02L15.75 10.5zM12 12.75a.75.75 0 01-.75-.75V7.5a.75.75 0 011.5 0v4.5a.75.75 0 01-.75.75zM12 21a9 9 0 100-18 9 9 0 000 18z" />
+                </svg>
+            </a>
+        </div>
+
+        {# Quick Link to Profile #}
+        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500">My Profile</p>
+                <p class="text-3xl font-bold text-gray-900">Settings</p>
+            </div>
+            <a href="{{ url_for('customer.customer_profile') }}" class="text-indigo-400 hover:text-indigo-600">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-10 w-10">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </a>
+        </div>
+
+        {# Quick Link to Cart #}
+        <div class="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-500">My Cart</p>
+                <p class="text-3xl font-bold text-gray-900">{{ session.cart|length if session.cart else 0 }}</p>
+            </div>
+            <a href="{{ url_for('customer.view_cart') }}" class="text-indigo-400 hover:text-indigo-600">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-10 w-10">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.474M18.75 8.25h.008v.008h-.008V8.25zm-12 0h.008v.008h-.008V8.25zm11.412 0a9.75 9.75 0 00-7.712-7.712M3 12.75V12a9.75 9.75 0 017.712-7.712M12 21a9.75 9.75 0 007.712-7.712M21 12.75V12a9.75 9.75 0 00-7.712-7.712M12 21a9.75 9.75 0 01-7.712-7.712M3 12.75a9.75 9.75 0 007.712 7.712M12 21a9.75 9.75 0 00-7.712-7.712M21 12.75a9.75 9.75 0 01-7.712 7.712" />
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    {# Recent Orders Section #}
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Recent Orders</h2>
+        {% if recent_orders %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for order in recent_orders %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ order.id }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ moment(order.created_at).format('YYYY-MM-DD HH:mm') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ order.formatted_total_price() }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                    {% if order.status == 'Pending' %}bg-yellow-100 text-yellow-800
+                                    {% elif order.status == 'Processing' %}bg-blue-100 text-blue-800
+                                    {% elif order.status == 'Completed' %}bg-green-100 text-green-800
+                                    {% elif order.status == 'Cancelled' %}bg-red-100 text-red-800
+                                    {% endif %}">
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <a href="{{ url_for('customer.customer_order_detail', order_id=order.id) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 text-right">
+                <a href="{{ url_for('customer.my_orders') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">View All Orders &rarr;</a>
+            </div>
+        {% else %}
+            <div class="text-center text-gray-600">
+                <p class="text-lg">You haven't placed any orders recently.</p>
+                <p class="mt-2 text-sm">Start by browsing our shops and adding items to your cart!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Your Shopping Cart - Your Marketplace{% endblock %} {# Only define title block once #}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">Your Shopping Cart</h1>
+
+    {% if cart_items %}
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+            <div class="divide-y divide-gray-200">
+                {% for item in cart_items %}
+                    <div class="flex items-center py-4">
+                        <div class="flex-shrink-0 w-20 h-20">
+                            <img src="{{ url_for('static', filename='uploads/' + item.image) if item.image else url_for('static', filename='img/default_product.png') }}"
+                                 alt="{{ item.name }}"
+                                 class="w-full h-full object-cover rounded-md">
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900">{{ item.name }}</h3>
+                            <p class="text-gray-600">Price: ₦{{ "%.2f" | format(item.price) }}</p>
+                            <p class="text-gray-600">Subtotal: ₦{{ "%.2f" | format(item.subtotal) }}</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <form action="{{ url_for('customer.update_cart', product_id=item.id) }}" method="POST" class="flex items-center">
+                                <label for="quantity-{{ item.id }}" class="sr-only">Quantity</label>
+                                <input type="number" id="quantity-{{ item.id }}" name="quantity" value="{{ item.quantity }}" min="1"
+                                       class="w-16 px-2 py-1 border border-gray-300 rounded-md text-center text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                <button type="submit" class="ml-2 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-md text-sm hover:bg-indigo-200 transition-colors duration-200">Update</button>
+                            </form>
+                            <form action="{{ url_for('customer.remove_from_cart', product_id=item.id) }}" method="POST">
+                                <button type="submit" class="text-red-600 hover:text-red-800 text-sm p-1 rounded-md">Remove</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-gray-200 flex justify-between items-center">
+                <p class="text-xl font-bold text-gray-900">Total:</p>
+                <p class="text-2xl font-bold text-indigo-600">₦{{ "%.2f" | format(total_price) }}</p>
+            </div>
+        </div>
+
+        <div class="flex justify-end space-x-4">
+            <a href="{{ url_for('customer.index') }}" class="px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
+                Continue Shopping
+            </a>
+            <a href="{{ url_for('customer.checkout') }}" class="px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
+                Proceed to Checkout
+            </a>
+        </div>
+    {% else %}
+        <div class="bg-white p-6 rounded-lg shadow-md text-center text-gray-600">
+            <p class="text-lg">Your cart is empty.</p>
+            <p class="mt-2 text-sm">Start browsing our products to add items to your cart!</p>
+            <a href="{{ url_for('customer.index') }}"
+               class="mt-4 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
+                Start Shopping
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

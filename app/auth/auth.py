@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash
 from app import db
 from app.models import User
@@ -13,25 +13,25 @@ def login():
     if form.validate_on_submit():
         # Check both username and email for login
         user = User.query.filter(
-            (User.username == form.username.data) | 
+            (User.username == form.username.data) |
             (User.email == form.username.data)
         ).first()
-        
+
         if user and user.check_password(form.password.data):
             if not user.is_approved and user.role != 'admin':
                 flash('Your account is pending admin approval', 'warning')
                 return redirect(url_for('auth.login'))
-            
+
             login_user(user, remember=form.remember.data)
             flash('Login successful!', 'success')
-            
+
             if user.role == 'admin':
                 return redirect(url_for('admin.dashboard'))
             elif user.role == 'marketer':
                 return redirect(url_for('marketer.dashboard'))
             else:
                 return redirect(url_for('customer.index'))
-        
+
         flash('Invalid username/email or password', 'danger')
     return render_template('auth/login.html', form=form)
 
@@ -39,28 +39,33 @@ def login():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
+        # Validate unique username and email before creating user
         if User.query.filter_by(username=form.username.data).first():
             flash('Username already taken', 'danger')
             return redirect(url_for('auth.register'))
-        
+
         if User.query.filter_by(email=form.email.data).first():
             flash('Email already registered', 'danger')
             return redirect(url_for('auth.register'))
-        
+
+        # Determine approval status based on role
+        is_approved = True if form.role.data == 'customer' else False
+        flash_message = 'Registration successful! You can now log in.' if is_approved else 'Registration successful! Please wait for admin approval.'
+
         user = User(
             username=form.username.data,
             email=form.email.data,
-            role='marketer',  # Default role
-            is_approved=False  # Requires admin approval
+            role=form.role.data,  # CRITICAL FIX: Get role from form
+            is_approved=is_approved # CRITICAL FIX: Set approval based on role
         )
         user.set_password(form.password.data)
-        
+
         db.session.add(user)
         db.session.commit()
-        
-        flash('Registration successful! Please wait for admin approval.', 'success')
+
+        flash(flash_message, 'success')
         return redirect(url_for('auth.login'))
-    
+
     return render_template('auth/register.html', form=form)
 
 @bp.route('/logout')
@@ -68,4 +73,5 @@ def register():
 def logout():
     logout_user()
     flash('You have been logged out.', 'info')
-    return redirect(url_for('customer.index'))
+    return redirect(url_for('auth.login'))
+

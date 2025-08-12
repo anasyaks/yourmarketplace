@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Order #{{ order.id }} Details - Marketer{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">Order #{{ order.id }} Details</h1>
+
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Order Information</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
+            <div>
+                <p><strong>Customer:</strong> {{ order.customer.username }}</p>
+                <p><strong>Customer Email:</strong> {{ order.customer.email }}</p>
+                <p><strong>Order Date:</strong> {{ moment(order.created_at).format('LLL') }}</p>
+            </div>
+            <div>
+                <p><strong>Order Total:</strong> <span class="font-bold text-indigo-600">{{ order.formatted_total_price() }}</span></p>
+                <p><strong>Current Status:</strong> 
+                    <span class="px-2 inline-flex text-sm leading-5 font-semibold rounded-full
+                        {% if order.status == 'Pending' %}bg-yellow-100 text-yellow-800
+                        {% elif order.status == 'Processing' %}bg-blue-100 text-blue-800
+                        {% elif order.status == 'Completed' %}bg-green-100 text-green-800
+                        {% elif order.status == 'Cancelled' %}bg-red-100 text-red-800
+                        {% endif %}">
+                        {{ order.status }}
+                    </span>
+                </p>
+                <p><strong>Last Updated:</strong> {{ moment(order.updated_at).fromNow() }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Items in This Order (for your shops)</h2>
+        {% if order_items_for_marketer %}
+            <div class="divide-y divide-gray-200">
+                {% for item in order_items_for_marketer %}
+                    <div class="flex items-center py-3">
+                        <div class="flex-shrink-0 w-16 h-16">
+                            <img src="{{ url_for('static', filename='uploads/' + item.product_ordered.image) if item.product_ordered.image else url_for('static', filename='img/default_product.png') }}"
+                                 alt="{{ item.product_ordered.name }}"
+                                 class="w-full h-full object-cover rounded-md">
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <p class="text-lg font-semibold text-gray-900">{{ item.product_ordered.name }}</p>
+                            <p class="text-gray-600 text-sm">Shop: {{ item.shop_ordered.name }}</p>
+                            <p class="text-gray-600 text-sm">Quantity: {{ item.quantity }}</p>
+                            <p class="text-gray-600 text-sm">Price at Purchase: ₦{{ "%.2f" | format(item.price_at_purchase) }}</p>
+                        </div>
+                        <p class="text-lg font-semibold text-gray-900">{{ item.formatted_subtotal() }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-600">No items from your shops found in this order.</p>
+        {% endif %}
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Update Order Status</h2>
+        <form action="{{ url_for('marketer.update_order_status', order_id=order.id) }}" method="POST" class="space-y-4">
+            <label for="status" class="block text-sm font-medium text-gray-700">New Status:</label>
+            <select id="status" name="status" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Processing" {% if order.status == 'Processing' %}selected{% endif %}>Processing</option>
+                <option value="Completed" {% if order.status == 'Completed' %}selected{% endif %}>Completed</option>
+                <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+            </select>
+            <button type="submit" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
+                Update Status
+            </button>
+        </form>
+    </div>
+
+    <p class="mt-8 text-center text-sm text-gray-600">
+        <a href="{{ url_for('marketer.marketer_orders') }}" class="font-medium text-indigo-600 hover:text-indigo-500">
+            &larr; Back to All Orders
+        </a>
+    </p>
+</div>
+{% endblock %}

@@ -5,8 +5,51 @@
         </a>
         <div class="space-x-4 flex items-center">
             <a href="{{ url_for('customer.index') }}" class="text-gray-600 hover:text-indigo-600 font-medium">Home</a>
-            <a href="{{ url_for('customer.shop_list') }}" class="text-gray-600 hover:text-indigo-600 font-medium">Shops</a> {# Link to shop_list #}
-            <a href="{{ url_for('customer.search') }}" class="text-gray-600 hover:text-indigo-600 font-medium">Search</a> {# Link to search #}
+            <a href="{{ url_for('customer.shop_list') }}" class="text-gray-600 hover:text-indigo-600 font-medium">Shops</a>
+            <a href="{{ url_for('customer.search') }}" class="text-gray-600 hover:text-indigo-600 font-medium">Search</a>
+            
+            {# My Orders Link (for logged-in customers) #}
+            {% if current_user.is_authenticated and current_user.role == 'customer' %}
+                <a href="{{ url_for('customer.my_orders') }}" class="text-gray-600 hover:text-indigo-600 font-medium">My Orders</a>
+            {% endif %}
+
+            {# Cart Link #}
+            <a href="{{ url_for('customer.view_cart') }}" class="relative text-gray-600 hover:text-indigo-600 font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.474M18.75 8.25h.008v.008h-.008V8.25zm-12 0h.008v.008h-.008V8.25zm11.412 0a9.75 9.75 0 00-7.712-7.712M3 12.75V12a9.75 9.75 0 017.712-7.712M12 21a9.75 9.75 0 007.712-7.712M21 12.75V12a9.75 9.75 0 00-7.712-7.712M12 21a9.75 9.75 0 01-7.712-7.712M3 12.75a9.75 9.75 0 007.712 7.712M12 21a9.75 9.75 0 00-7.712-7.712M21 12.75a9.75 9.75 0 01-7.712 7.712" />
+                </svg>
+                {% if session.cart and session.cart|length > 0 %}
+                    <span class="absolute -top-2 -right-2 bg-indigo-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                        {{ session.cart|length }}
+                    </span>
+                {% endif %}
+            </a>
+
+            {# Notification Bell (for logged-in marketers) #}
+            {% if current_user.is_authenticated and current_user.role == 'marketer' %}
+                <a href="{{ url_for('marketer.marketer_notifications') }}" class="relative text-gray-600 hover:text-indigo-600 font-medium">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.04 5.455 1.31m5.714 0a24.248 24.248 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                    </svg>
+                    {# Display unread notification count #}
+                    {% if current_user.is_authenticated and current_user.notifications.filter_by(is_read=False).count() > 0 %}
+                        <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                            {{ current_user.notifications.filter_by(is_read=False).count() }}
+                        </span>
+                    {% endif %}
+                </a>
+            {% endif %}
+
+            {# My Profile Link #}
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('customer.customer_profile') if current_user.role == 'customer' else url_for('marketer.marketer_profile') }}" class="text-gray-600 hover:text-indigo-600 font-medium">My Profile</a>
+            {% endif %}
+
+            {# Customer Dashboard Link #}
+            {% if current_user.is_authenticated and current_user.role == 'customer' %}
+                <a href="{{ url_for('customer.customer_dashboard') }}" class="text-gray-600 hover:text-indigo-600 font-medium">Dashboard</a>
+            {% endif %}
+
             {% if current_user.is_authenticated %}
                 {% if current_user.role == 'admin' %}
                     <a href="{{ url_for('admin.dashboard') }}" class="text-gray-600 hover:text-indigo-600 font-medium">Admin Dashboard</a>

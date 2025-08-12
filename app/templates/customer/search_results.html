@@ -1,46 +1,85 @@
 {% extends "base.html" %}
 {% from 'components/pagination.html' import render_pagination %}
-{% from 'components/product_card.html' import product_card %}
-{% from 'components/shop_card.html' import shop_card %}
 
 {% block title %}Search Results for "{{ query }}" - Your Marketplace{% endblock %}
 
 {% block content %}
 <div class="max-w-6xl mx-auto px-4 py-8">
-    <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">Search Results for "<span class="text-indigo-600">{{ query }}</span>"</h1>
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">Search Results {% if query %}for "<span class="text-indigo-600">{{ query }}</span>"{% endif %}</h1>
+
+    {# Filter and Sort Form #}
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Filter & Sort</h2>
+        <form action="{{ url_for('customer.search') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <input type="hidden" name="q" value="{{ query }}"> {# Keep original query #}
+
+            <div>
+                <label for="min_price" class="block text-sm font-medium text-gray-700">Min Price (₦)</label>
+                <input type="number" id="min_price" name="min_price" value="{{ min_price if min_price is not none }}"
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., 1000">
+            </div>
+            <div>
+                <label for="max_price" class="block text-sm font-medium text-gray-700">Max Price (₦)</label>
+                <input type="number" id="max_price" name="max_price" value="{{ max_price if max_price is not none }}"
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., 50000">
+            </div>
+            <div>
+                <label for="category_id" class="block text-sm font-medium text-gray-700">Category</label>
+                <select id="category_id" name="category_id" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if selected_category_id == category.id %}selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="sort_by" class="block text-sm font-medium text-gray-700">Sort By</label>
+                <select id="sort_by" name="sort_by" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                    <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest</option>
+                    <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                    <option value="rating_desc" {% if sort_by == 'rating_desc' %}selected{% endif %}>Average Rating</option>
+                </select>
+            </div>
+            <div class="md:col-span-4 flex justify-end space-x-2">
+                <button type="submit" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Apply Filters
+                </button>
+                <a href="{{ url_for('customer.search', q=query) }}" class="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Reset
+                </a>
+            </div>
+        </form>
+    </div>
 
     <!-- Products Section -->
     <section class="mb-12">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-3">Products</h2>
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-3">Products ({{ products|length }})</h2>
         {% if products %}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {% for product in products %}
                     {% include 'components/product_card.html' %}
                 {% endfor %}
             </div>
-            {# If you implement pagination for products, uncomment and adjust this #}
-            {# {{ render_pagination(products_pagination, 'customer.search', {'q': query}) }} #}
         {% else %}
             <div class="bg-white p-6 rounded-lg shadow-md text-center text-gray-600">
-                <p class="text-lg">No products found matching your search.</p>
+                <p class="text-lg">No products found matching your criteria.</p>
             </div>
         {% endif %}
     </section>
 
     <!-- Shops Section -->
     <section>
-        <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-3">Shops</h2>
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b border-gray-200 pb-3">Shops ({{ shops|length }})</h2>
         {% if shops %}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {% for shop in shops %}
                     {% include 'components/shop_card.html' %}
                 {% endfor %}
             </div>
-            {# If you implement pagination for shops, uncomment and adjust this #}
-            {# {{ render_pagination(shops_pagination, 'customer.search', {'q': query}) }} #}
         {% else %}
             <div class="bg-white p-6 rounded-lg shadow-md text-center text-gray-600">
-                <p class="text-lg">No shops found matching your search.</p>
+                <p class="text-lg">No shops found matching your criteria.</p>
             </div>
         {% endif %}
     </section>

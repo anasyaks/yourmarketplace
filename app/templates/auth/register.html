@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from 'components/form_macros.html' import render_field %}
 
 {% block title %}Register - Your Marketplace{% endblock %}
 
@@ -10,43 +11,27 @@
                 Create a New Account
             </h2>
             <p class="mt-2 text-center text-sm text-gray-600">
-                Join our marketplace as a marketer to start selling your products!
+                Join our marketplace and choose your account type below.
             </p>
         </div>
         <form class="mt-8 space-y-6" action="" method="POST" novalidate>
             {{ form.hidden_tag() }}
             <div class="rounded-md shadow-sm -space-y-px">
-                <!-- Username Field -->
                 <div>
-                    <label for="username" class="sr-only">Username</label>
-                    {{ form.username(class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm", placeholder="Username") }}
-                    {% for error in form.username.errors %}
-                        <span class="text-red-500 text-xs mt-1 block">{{ error }}</span>
-                    {% endfor %}
+                    {{ render_field(form.username, placeholder="Username") }}
                 </div>
-                <!-- Email Field -->
                 <div>
-                    <label for="email" class="sr-only">Email address</label>
-                    {{ form.email(class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm mt-px", placeholder="Email address") }}
-                    {% for error in form.email.errors %}
-                        <span class="text-red-500 text-xs mt-1 block">{{ error }}</span>
-                    {% endfor %}
+                    {{ render_field(form.email, placeholder="Email address") }}
                 </div>
-                <!-- Password Field -->
+                {# CRITICAL FIX: Render the role selection field #}
                 <div>
-                    <label for="password" class="sr-only">Password</label>
-                    {{ form.password(class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm mt-px", placeholder="Password") }}
-                    {% for error in form.password.errors %}
-                        <span class="text-red-500 text-xs mt-1 block">{{ error }}</span>
-                    {% endfor %}
+                    {{ render_field(form.role, label_class="block text-sm font-medium text-gray-700") }}
                 </div>
-                <!-- Confirm Password Field -->
                 <div>
-                    <label for="confirm_password" class="sr-only">Confirm Password</label>
-                    {{ form.confirm_password(class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm mt-px", placeholder="Confirm Password") }}
-                    {% for error in form.confirm_password.errors %}
-                        <span class="text-red-500 text-xs mt-1 block">{{ error }}</span>
-                    {% endfor %}
+                    {{ render_field(form.password, placeholder="Password") }}
+                </div>
+                <div>
+                    {{ render_field(form.confirm_password, placeholder="Confirm Password") }}
                 </div>
             </div>
 
@@ -54,12 +39,6 @@
                 {{ form.submit(class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500") }}
             </div>
         </form>
-        <p class="mt-4 text-center text-sm text-gray-600">
-            Already have an account?
-            <a href="{{ url_for('auth.login') }}" class="font-medium text-indigo-600 hover:text-indigo-500">
-                Sign in here
-            </a>
-        </p>
     </div>
 </div>
 {% endblock %}

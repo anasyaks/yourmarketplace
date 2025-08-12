@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from 'components/form_macros.html' import render_field, render_file_field %}
+{% from 'components/form_macros.html' import render_field, render_file_field, render_checkbox_field %} {# Import render_checkbox_field #}
 
 {% block title %}Edit Product - {{ product.name }}{% endblock %}
 
@@ -44,6 +44,11 @@
                     {% endif %}
                     {{ render_file_field(form.image, label_class="block text-sm font-medium text-gray-700") }}
                 </div>
+                
+                {# CRITICAL FIX: Render the is_active checkbox #}
+                <div>
+                    {{ render_checkbox_field(form.is_active, label_class="text-sm font-medium text-gray-900") }}
+                </div>
             </div>
 
             <div>
@@ -52,8 +57,4 @@
         </form>
     </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/marketer.js') }}"></script>
 {% endblock %}
