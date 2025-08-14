@@ -8,9 +8,9 @@ class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key-here-CHANGE-THIS-IN-PRODUCTION')
 
     # Database
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///marketplace.db')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///marketplace.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
+    
     # File Uploads
     UPLOAD_FOLDER = 'app/static/uploads'
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
