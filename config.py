@@ -14,6 +14,6 @@ class Config:
     MAX_CONTENT_LENGTH = 2 * 1024 * 1024  # 2MB
 
     # Admin Credentials (override with env vars in production)
-    #ADMIN_USERNAME = os.getenv('ADMIN_USERNAME', 'admin')
-    #ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'admin123')
-    #ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'admin@marketplace.com')
+    ADMIN_USERNAME = ('ADMIN_USERNAME', 'admin')
+    ADMIN_PASSWORD = ('ADMIN_PASSWORD', 'admin123')
+    ADMIN_EMAIL = ('ADMIN_EMAIL', 'admin@marketplace.com')
